@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "52261725148",
+    "project_id": "eva-firebase-2457c",
+    "storage_bucket": "eva-firebase-2457c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:52261725148:android:f90c60b99ebbd4dcb72519",
+        "android_client_info": {
+          "package_name": "com.example.firebase_eva"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYY5wSllcLwFUzaonyWVYeBGcsVvbybQM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
