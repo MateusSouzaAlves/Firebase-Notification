@@ -1,5 +1,12 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="colorPrimary">#4CAF50</color> <!-- Verde -->
+    <color name="colorPrimaryDark">#388E3C</color> <!-- Verde escuro -->
+    <color name="colorAccent">#009688</color> <!-- Rosa (opcional) -->
+    <color name="colorSecondary">#000000</color> <!-- Preto -->
+    <color name="colorPrimaryVariant">#388E3C</color> <!-- Variante do verde -->
+
+
+
+
+    <color name="red">#A10303</color>
 </resources>
