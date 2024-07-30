@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.provider.Settings;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
@@ -14,11 +16,15 @@ import androidx.core.app.NotificationCompat;
 import com.example.firebase_eva.MainActivity;
 import com.example.firebase_eva.NotificationActivity;
 import com.example.firebase_eva.R;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 public class FirebaseService extends FirebaseMessagingService {
 
@@ -111,5 +117,27 @@ public class FirebaseService extends FirebaseMessagingService {
     @Override
     public void onNewToken(@NonNull String token) {
         super.onNewToken(token);
+        saveTokenToFirestore(token);
+    }
+
+    private void saveTokenToFirestore(String token){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        Map<String, Object> tokenMap = new HashMap<>();
+        tokenMap.put("token", token);
+
+        db.collection("tokens")
+                .document(getDeviceIdString())
+                .set(tokenMap)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("FirebaseService", "Token salvo com sucesso");
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("FirebaseService", "Erro ao salver o token", e);
+                });
+    }
+
+    private String getDeviceIdString(){
+        return Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 }

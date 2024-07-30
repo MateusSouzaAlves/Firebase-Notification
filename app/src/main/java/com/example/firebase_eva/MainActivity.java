@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getBaseContext(), "Botão Proibido", Toast.LENGTH_SHORT).show());
     }
 
+
     private void handleSwitchClick(Switch switchView, String topic) {
         if (!NetworkUtil.isNetworkAvailable(this)) {
             showToast("Sem conexão de rede");
@@ -63,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         if (task.isSuccessful()) {
             showToast(successMessage);
         } else {
-            noChecked(task, switchView);
+            switchView.setChecked(false);
             showToast(failureMessage);
         }
     }
@@ -72,9 +73,5 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(getBaseContext(), message, Toast.LENGTH_SHORT).show();
     }
 
-    private void noChecked(Task<Void> task, Switch switchView){
-        if (!task.isSuccessful()) {
-            switchView.setChecked(false);
-        }
-    }
+
 }
