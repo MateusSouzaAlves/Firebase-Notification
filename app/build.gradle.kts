@@ -30,6 +30,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
@@ -46,4 +49,5 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.picasso)
     implementation(libs.firebase.analytics)
+    implementation ("br.com.caelum.stella:caelum-stella-core:2.1.3")
 }

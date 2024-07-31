@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -134,7 +135,7 @@ public class FirebaseService extends FirebaseMessagingService {
         tokenMap.put("token", token);
 
         db.collection("tokens")
-                .document(getDeviceIdString())
+                .document(getCpfFromPreferences())
                 .set(tokenMap)
                 .addOnSuccessListener(aVoid -> {
                     Log.d("FirebaseService", "Token salvo com sucesso");
@@ -144,8 +145,13 @@ public class FirebaseService extends FirebaseMessagingService {
                 });
     }
 
-    private String getDeviceIdString() {
-        return Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+//    private String getDeviceIdString() {
+//        return Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+//    }
+
+    private String getCpfFromPreferences(){
+        SharedPreferences preferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        return preferences.getString("user_cpf","default_cpf");
     }
 
     private void createNotificationChannel() {
