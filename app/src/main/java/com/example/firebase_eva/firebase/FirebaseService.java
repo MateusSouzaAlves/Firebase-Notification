@@ -125,17 +125,25 @@ public class FirebaseService extends FirebaseMessagingService {
     public void onNewToken(@NonNull String token) {
         super.onNewToken(token);
         Log.d("FirebaseService", "Novo token: " + token);
-        saveTokenToFirestore(token);
+        SharedPreferences preferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        String cpf = preferences.getString("user_cpf", null);
+        if (cpf != null && !cpf.equals("default_cpf")){
+            saveTokenToFirestore(token, cpf);
+        } else {
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString("pending_token", token);
+            editor.apply();
+        }
     }
 
-    private void saveTokenToFirestore(String token) {
+    private void saveTokenToFirestore(String token, String cpf) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         Map<String, Object> tokenMap = new HashMap<>();
         tokenMap.put("token", token);
 
         db.collection("tokens")
-                .document(getCpfFromPreferences())
+                .document(cpf)
                 .set(tokenMap)
                 .addOnSuccessListener(aVoid -> {
                     Log.d("FirebaseService", "Token salvo com sucesso");
@@ -149,10 +157,6 @@ public class FirebaseService extends FirebaseMessagingService {
 //        return Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 //    }
 
-    private String getCpfFromPreferences(){
-        SharedPreferences preferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        return preferences.getString("user_cpf","default_cpf");
-    }
 
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

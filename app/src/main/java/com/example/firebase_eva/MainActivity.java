@@ -1,5 +1,7 @@
 package com.example.firebase_eva;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -22,7 +24,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+
+        if (!isCpfSaved()) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_main);
 
         switchEs = findViewById(R.id.switch_es);
@@ -44,6 +53,11 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getBaseContext(), "Botão Proibido", Toast.LENGTH_SHORT).show());
     }
 
+    private boolean isCpfSaved(){
+        SharedPreferences preferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        String cpf = preferences.getString("user_cpf", null);
+        return cpf != null;
+    }
 
     private void handleSwitchClick(Switch switchView, String topic) {
         if (!NetworkUtil.isNetworkAvailable(this)) {
