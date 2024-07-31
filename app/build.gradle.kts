@@ -45,4 +45,5 @@ dependencies {
     implementation(libs.firebase.messaging)
     implementation(libs.firebase.firestore)
     implementation(libs.picasso)
+    implementation(libs.firebase.analytics)
 }

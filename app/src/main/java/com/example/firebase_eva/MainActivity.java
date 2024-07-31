@@ -1,6 +1,7 @@
 package com.example.firebase_eva;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.Switch;
 import android.widget.Toast;
@@ -28,6 +29,14 @@ public class MainActivity extends AppCompatActivity {
         switchMt = findViewById(R.id.switch_mt);
         buttonLogout = findViewById(R.id.button_logout);
 
+        FirebaseMessaging.getInstance().subscribeToTopic("all")
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d("FirebaseService", "Inscrito no tópico all");
+                    } else {
+                        Log.d("FirebaseService", "Falha na inscrição no tópico all");
+                    }
+                });
         switchEs.setOnClickListener(view -> handleSwitchClick(switchEs, "ES"));
         switchMt.setOnClickListener(view -> handleSwitchClick(switchMt, "MT"));
 

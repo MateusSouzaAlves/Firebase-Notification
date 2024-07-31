@@ -1,5 +1,6 @@
 package com.example.firebase_eva.firebase;
 
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -7,6 +8,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
 
@@ -24,16 +26,21 @@ import com.squareup.picasso.Picasso;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class FirebaseService extends FirebaseMessagingService {
 
     @Override
+    public void onCreate() {
+        super.onCreate();
+        createNotificationChannel();
+    }
+
+    @Override
     public void onMessageReceived(@NonNull RemoteMessage message) {
-
-           //Mensagem Data
-        if (!message.getData().isEmpty()){
-
+        Log.d("FirebaseService", "Mensagem recebida: " + message.getMessageId());
+        // Mensagem Data
+        if (!message.getData().isEmpty()) {
+            Log.d("FirebaseService", "Dados da mensagem: " + message.getData());
             String titulo = message.getData().get("titulo");
             String messageData = message.getData().get("mensagem");
             String name = message.getData().get("nome");
@@ -41,20 +48,19 @@ public class FirebaseService extends FirebaseMessagingService {
 
             String messageCompleteData = messageData + " -- " + name;
 
-            sendNotificationWithImage(titulo,messageCompleteData, urlImagem);
+            sendNotificationWithImage(titulo, messageCompleteData, urlImagem);
         }
-           //Mensagem Simples
-        else if (message.getNotification() != null){
-
+        // Mensagem Simples
+        else if (message.getNotification() != null) {
+            Log.d("FirebaseService", "Notificação: " + message.getNotification().getBody());
             String title = message.getNotification().getTitle();
             String messageBody = message.getNotification().getBody();
 
             sendNotification(title, messageBody);
-
         }
     }
 
-    private void sendNotification(String title,String message){
+    private void sendNotification(String title, String message) {
 
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -77,7 +83,7 @@ public class FirebaseService extends FirebaseMessagingService {
         notificationManager.notify(0, notification.build());
     }
 
-    private void sendNotificationWithImage(String title,String message, String urlImage){
+    private void sendNotificationWithImage(String title, String message, String urlImage) {
 
         Bitmap bitmap = null;
 
@@ -117,10 +123,11 @@ public class FirebaseService extends FirebaseMessagingService {
     @Override
     public void onNewToken(@NonNull String token) {
         super.onNewToken(token);
+        Log.d("FirebaseService", "Novo token: " + token);
         saveTokenToFirestore(token);
     }
 
-    private void saveTokenToFirestore(String token){
+    private void saveTokenToFirestore(String token) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         Map<String, Object> tokenMap = new HashMap<>();
@@ -137,7 +144,21 @@ public class FirebaseService extends FirebaseMessagingService {
                 });
     }
 
-    private String getDeviceIdString(){
+    private String getDeviceIdString() {
         return Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+    }
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            String channelId = getString(R.string.default_notification_channel_id);
+            String channelName = "Default Channel";
+            String channelDescription = "Canal padrão para notificações";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(channelId, channelName, importance);
+            channel.setDescription(channelDescription);
+
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 }
