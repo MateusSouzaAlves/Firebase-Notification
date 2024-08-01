@@ -16,6 +16,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
+import com.example.firebase_eva.LoginActivity;
 import com.example.firebase_eva.MainActivity;
 import com.example.firebase_eva.NotificationActivity;
 import com.example.firebase_eva.R;
@@ -39,20 +40,25 @@ public class FirebaseService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(@NonNull RemoteMessage message) {
         Log.d("FirebaseService", "Mensagem recebida: " + message.getMessageId());
-        // Mensagem Data
+
         if (!message.getData().isEmpty()) {
             Log.d("FirebaseService", "Dados da mensagem: " + message.getData());
-            String titulo = message.getData().get("titulo");
-            String messageData = message.getData().get("mensagem");
-            String name = message.getData().get("nome");
-            String urlImagem = message.getData().get("urlimagem");
 
-            String messageCompleteData = messageData + " -- " + name;
+            String action = message.getData().get("action");
 
-            sendNotificationWithImage(titulo, messageCompleteData, urlImagem);
-        }
-        // Mensagem Simples
-        else if (message.getNotification() != null) {
+            if ("logout".equals(action)) {
+                handleLogout();
+            } else {
+                String titulo = message.getData().get("titulo");
+                String messageData = message.getData().get("mensagem");
+                String name = message.getData().get("nome");
+                String urlImagem = message.getData().get("urlimagem");
+
+                String messageCompleteData = messageData + " -- " + name;
+
+                sendNotificationWithImage(titulo, messageCompleteData, urlImagem);
+            }
+        } else if (message.getNotification() != null) {
             Log.d("FirebaseService", "Notificação: " + message.getNotification().getBody());
             String title = message.getNotification().getTitle();
             String messageBody = message.getNotification().getBody();
@@ -60,6 +66,7 @@ public class FirebaseService extends FirebaseMessagingService {
             sendNotification(title, messageBody);
         }
     }
+
 
     private void sendNotification(String title, String message) {
 
@@ -170,5 +177,16 @@ public class FirebaseService extends FirebaseMessagingService {
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.createNotificationChannel(channel);
         }
+    }
+
+    private void handleLogout(){
+        SharedPreferences preferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.remove("user_cpf");
+        editor.apply();
+
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 }
