@@ -10,8 +10,10 @@ import android.graphics.Bitmap;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
-import android.provider.Settings;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
@@ -184,6 +186,10 @@ public class FirebaseService extends FirebaseMessagingService {
         SharedPreferences.Editor editor = preferences.edit();
         editor.remove("user_cpf");
         editor.apply();
+
+        new Handler(Looper.getMainLooper()).post(() ->
+                Toast.makeText(getApplicationContext(), "Você foi desconectado", Toast.LENGTH_LONG).show()
+        );
 
         Intent intent = new Intent(this, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
